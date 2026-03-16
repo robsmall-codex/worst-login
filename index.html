@@ -38,6 +38,31 @@
             />
           </label>
 
+          <section class="captcha" aria-labelledby="captcha-label">
+            <p id="captcha-label" class="captcha-title">Proof Of Humanity</p>
+            <div class="captcha-meta">
+              <p id="captcha-timer" class="captcha-timer" aria-live="polite"></p>
+              <button id="captcha-refresh" class="captcha-refresh" type="button">
+                Refresh challenge
+              </button>
+            </div>
+            <p id="captcha-instruction" class="captcha-instruction"></p>
+            <p id="captcha-hint" class="captcha-hint"></p>
+            <p id="captcha-prompt" class="captcha-prompt" aria-live="polite"></p>
+            <label class="field captcha-field">
+              <span>Captcha response</span>
+              <input
+                id="captcha-answer"
+                name="captcha-answer"
+                type="text"
+                autocapitalize="none"
+                autocomplete="off"
+                spellcheck="false"
+                required
+              />
+            </label>
+          </section>
+
           <button id="submit-button" type="submit">Log in</button>
         </form>
 

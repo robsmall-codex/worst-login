@@ -3,6 +3,12 @@ const submitButton = document.querySelector("#submit-button");
 const statusNode = document.querySelector("#status");
 const successPanel = document.querySelector("#success-panel");
 const passwordInput = document.querySelector("#password");
+const captchaInstruction = document.querySelector("#captcha-instruction");
+const captchaHint = document.querySelector("#captcha-hint");
+const captchaPrompt = document.querySelector("#captcha-prompt");
+const captchaAnswerInput = document.querySelector("#captcha-answer");
+const captchaTimer = document.querySelector("#captcha-timer");
+const captchaRefreshButton = document.querySelector("#captcha-refresh");
 
 const humiliationTiers = [
   [
@@ -28,6 +34,108 @@ const humiliationTiers = [
 ];
 
 let failedAttempts = 0;
+let currentCaptchaAnswer = "";
+let captchaExpiresAt = 0;
+let captchaDifficulty = 0;
+let captchaTimerId = null;
+let audioContext = null;
+let audioUnlocked = false;
+let lastTickSecond = null;
+
+const captchaWords = [
+  "marzipan",
+  "lighthouse",
+  "accordion",
+  "daydream",
+  "treasure",
+  "backflip",
+  "whiplash",
+  "cinnamon",
+];
+
+const misleadingHints = [
+  "Hint: If your answer seems right, consider second-guessing yourself anyway.",
+  "Formatting matters emotionally, if not mathematically.",
+  "Please answer calmly. Panic has a poor success rate.",
+  "This challenge was reviewed by nobody and approved immediately.",
+  "Refresh if confused. It almost never helps.",
+];
+
+function randomNumber(max) {
+  return Math.floor(Math.random() * max);
+}
+
+function buildMathChallenge() {
+  const level = Math.min(4, 2 + captchaDifficulty);
+  const a = randomNumber(8) + 4;
+  const b = randomNumber(7) + 3;
+  const c = randomNumber(6) + 2;
+
+  if (level <= 2) {
+    const answer = a * (b + c);
+
+    return {
+      instruction: "Evaluate the expression exactly before continuing.",
+      hint: misleadingHints[randomNumber(misleadingHints.length)],
+      prompt: `${a} x (${b} + ${c})`,
+      answer: String(answer),
+    };
+  }
+
+  if (level === 3) {
+    const answer = a * b - c * (a - 1);
+
+    return {
+      instruction: "Respect the order of operations. The form certainly will.",
+      hint: misleadingHints[randomNumber(misleadingHints.length)],
+      prompt: `${a} x ${b} - ${c} x (${a - 1})`,
+      answer: String(answer),
+    };
+  }
+
+  const divisor = randomNumber(4) + 2;
+  const base = divisor * (randomNumber(5) + 6);
+  const subtractor = randomNumber(9) + 7;
+  const answer = (base + subtractor) / divisor + c;
+
+  return {
+    instruction: "Perform each step carefully and enter only the final integer.",
+    hint: misleadingHints[randomNumber(misleadingHints.length)],
+    prompt: `(${base} + ${subtractor}) / ${divisor} + ${c}`,
+    answer: String(answer),
+  };
+}
+
+function buildCaptchaChallenge() {
+  const challengeType = randomNumber(3);
+
+  if (challengeType === 0) {
+    return buildMathChallenge();
+  }
+
+  if (challengeType === 1) {
+    const word = captchaWords[randomNumber(captchaWords.length)];
+
+    return {
+      instruction: "Type this word backwards to prove you are probably organic.",
+      hint: misleadingHints[randomNumber(misleadingHints.length)],
+      prompt: word.toUpperCase(),
+      answer: word.split("").reverse().join(""),
+    };
+  }
+
+  const word = captchaWords[randomNumber(captchaWords.length)];
+  const first = word[0];
+  const third = word[2];
+  const last = word[word.length - 1];
+
+  return {
+    instruction: "Enter the 1st, 3rd, and last letters with no spaces.",
+    hint: misleadingHints[randomNumber(misleadingHints.length)],
+    prompt: word.toUpperCase(),
+    answer: `${first}${third}${last}`,
+  };
+}
 
 function wait(ms) {
   return new Promise((resolve) => {
@@ -35,9 +143,130 @@ function wait(ms) {
   });
 }
 
+function ensureAudioContext() {
+  if (!audioContext) {
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+
+    if (!AudioContextClass) {
+      return null;
+    }
+
+    audioContext = new AudioContextClass();
+  }
+
+  if (!audioUnlocked && audioContext.state === "suspended") {
+    audioContext.resume().catch(() => {});
+  }
+
+  audioUnlocked = true;
+  return audioContext;
+}
+
+function playTone({ frequency, duration, type = "square", volume = 0.08 }) {
+  const context = ensureAudioContext();
+
+  if (!context) {
+    return;
+  }
+
+  const oscillator = context.createOscillator();
+  const gainNode = context.createGain();
+  const now = context.currentTime;
+
+  oscillator.type = type;
+  oscillator.frequency.setValueAtTime(frequency, now);
+  gainNode.gain.setValueAtTime(0.0001, now);
+  gainNode.gain.exponentialRampToValueAtTime(volume, now + 0.01);
+  gainNode.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+
+  oscillator.connect(gainNode);
+  gainNode.connect(context.destination);
+  oscillator.start(now);
+  oscillator.stop(now + duration + 0.02);
+}
+
+function playTick(remainingSeconds) {
+  const urgencyBoost = remainingSeconds <= 5 ? 120 : 0;
+
+  playTone({
+    frequency: 880 + urgencyBoost,
+    duration: 0.09,
+    type: "square",
+    volume: remainingSeconds <= 5 ? 0.16 : 0.11,
+  });
+}
+
+function playTimeoutAlarm() {
+  const context = ensureAudioContext();
+
+  if (!context) {
+    return;
+  }
+
+  playTone({ frequency: 220, duration: 0.22, type: "sawtooth", volume: 0.18 });
+
+  window.setTimeout(() => {
+    playTone({ frequency: 165, duration: 0.32, type: "sawtooth", volume: 0.22 });
+  }, 140);
+
+  window.setTimeout(() => {
+    playTone({ frequency: 110, duration: 0.48, type: "triangle", volume: 0.2 });
+  }, 300);
+}
+
+function unlockAudioOnce() {
+  ensureAudioContext();
+  window.removeEventListener("pointerdown", unlockAudioOnce);
+  window.removeEventListener("keydown", unlockAudioOnce);
+}
+
 function setStatus(message, type = "") {
   statusNode.textContent = message;
   statusNode.className = `status${type ? ` ${type}` : ""}`;
+}
+
+function refreshCaptcha() {
+  const challenge = buildCaptchaChallenge();
+  currentCaptchaAnswer = challenge.answer.toLowerCase();
+  captchaExpiresAt = Date.now() + Math.max(7000, 18000 - captchaDifficulty * 1800);
+  lastTickSecond = null;
+  captchaInstruction.textContent = challenge.instruction;
+  captchaHint.textContent = challenge.hint;
+  captchaPrompt.textContent = challenge.prompt;
+  captchaAnswerInput.value = "";
+  updateCaptchaTimer();
+}
+
+function updateCaptchaTimer() {
+  const remainingSeconds = Math.max(
+    0,
+    Math.ceil((captchaExpiresAt - Date.now()) / 1000)
+  );
+
+  captchaTimer.textContent = `Expires in ${remainingSeconds}s`;
+  captchaTimer.classList.toggle("captcha-expiring", remainingSeconds <= 5);
+
+  if (remainingSeconds > 0 && remainingSeconds !== lastTickSecond) {
+    lastTickSecond = remainingSeconds;
+    playTick(remainingSeconds);
+  }
+}
+
+function startCaptchaTimer() {
+  if (captchaTimerId) {
+    window.clearInterval(captchaTimerId);
+  }
+
+  captchaTimerId = window.setInterval(() => {
+    updateCaptchaTimer();
+
+    if (Date.now() >= captchaExpiresAt) {
+      captchaDifficulty += 1;
+      playTimeoutAlarm();
+      refreshCaptcha();
+      setStatus("Captcha expired. The replacement is less cooperative.", "error");
+    }
+  }, 250);
 }
 
 function getFailureMessage(attemptNumber, fallbackMessage) {
@@ -69,14 +298,47 @@ function getFailureMessage(attemptNumber, fallbackMessage) {
 
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
+  ensureAudioContext();
   successPanel.hidden = true;
 
   const formData = new FormData(form);
   const username = String(formData.get("username") || "").trim();
   const password = String(formData.get("password") || "");
+  const captchaAnswer = String(formData.get("captcha-answer") || "")
+    .trim()
+    .toLowerCase();
 
   if (!username || !password) {
     setStatus("Enter both username and password.", "error");
+    return;
+  }
+
+  if (!captchaAnswer) {
+    setStatus("Complete the captcha ritual first.", "error");
+    return;
+  }
+
+  if (Date.now() >= captchaExpiresAt) {
+    failedAttempts += 1;
+    captchaDifficulty += 1;
+    passwordInput.value = "";
+    refreshCaptcha();
+    setStatus(
+      `Attempt ${failedAttempts}. Captcha expired. Speed and accuracy were both invited.`,
+      "error"
+    );
+    return;
+  }
+
+  if (captchaAnswer !== currentCaptchaAnswer) {
+    failedAttempts += 1;
+    captchaDifficulty += 1;
+    passwordInput.value = "";
+    refreshCaptcha();
+    setStatus(
+      `Attempt ${failedAttempts}. Captcha failed. A stunning setback before the login even mattered.`,
+      "error"
+    );
     return;
   }
 
@@ -114,18 +376,37 @@ form.addEventListener("submit", async (event) => {
       setStatus("Login successful.", "success-text");
       successPanel.hidden = false;
       failedAttempts = 0;
+      captchaDifficulty = 0;
       form.reset();
+      refreshCaptcha();
       return;
     }
 
     failedAttempts += 1;
+    captchaDifficulty += 1;
     passwordInput.value = "";
+    refreshCaptcha();
     setStatus(getFailureMessage(failedAttempts), "error");
   } catch (error) {
     failedAttempts += 1;
+    captchaDifficulty += 1;
     passwordInput.value = "";
+    refreshCaptcha();
     setStatus(getFailureMessage(failedAttempts, error.message), "error");
   } finally {
     submitButton.disabled = false;
   }
 });
+
+captchaRefreshButton.addEventListener("click", () => {
+  ensureAudioContext();
+  captchaDifficulty += 1;
+  refreshCaptcha();
+  setStatus("A fresh challenge has been issued. It is not friendlier.", "error");
+});
+
+window.addEventListener("pointerdown", unlockAudioOnce);
+window.addEventListener("keydown", unlockAudioOnce);
+
+refreshCaptcha();
+startCaptchaTimer();

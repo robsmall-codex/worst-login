@@ -1,16 +1,22 @@
+@import url("https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap");
+
 :root {
   color-scheme: light;
-  --bg-top: #fff4ef;
-  --bg-bottom: #c73328;
-  --panel: rgba(255, 246, 242, 0.96);
-  --border: #7a120d;
-  --text: #4a0d09;
-  --muted: #8a3028;
-  --accent: #d82c20;
-  --accent-hover: #b41d15;
-  --success: #1f8f5f;
-  --shadow: 0 30px 90px rgba(122, 18, 13, 0.3);
-  font-family: Georgia, "Times New Roman", serif;
+  --bg-main: #fcfcfb;
+  --panel: rgba(255, 255, 255, 0.94);
+  --border: #d9dde2;
+  --text: #161f2a;
+  --muted: #5e6d7d;
+  --accent: #e13b30;
+  --accent-hover: #c92d23;
+  --accent-deep: #8a211d;
+  --accent-soft: #fff0ec;
+  --sky: #8fc7ff;
+  --sun: #ffd861;
+  --ink: #202938;
+  --success: #13885d;
+  --shadow: 0 28px 80px rgba(31, 41, 55, 0.14);
+  font-family: "Sora", sans-serif;
 }
 
 * {
@@ -26,9 +32,38 @@ body {
   min-height: 100vh;
   color: var(--text);
   background:
-    radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.75), transparent 28%),
-    radial-gradient(circle at 82% 30%, rgba(255, 210, 204, 0.45), transparent 22%),
-    linear-gradient(180deg, var(--bg-top), var(--bg-bottom));
+    radial-gradient(circle at 12% 16%, rgba(143, 199, 255, 0.22), transparent 20%),
+    radial-gradient(circle at 82% 10%, rgba(255, 216, 97, 0.22), transparent 18%),
+    linear-gradient(132deg, transparent 0 67%, rgba(225, 59, 48, 0.94) 67% 100%),
+    linear-gradient(180deg, #ffffff, var(--bg-main));
+  overflow-x: hidden;
+}
+
+body::before {
+  content: "redis >";
+  position: fixed;
+  top: -28px;
+  right: -84px;
+  font-family: "Space Mono", monospace;
+  font-size: clamp(6rem, 18vw, 14rem);
+  font-weight: 700;
+  letter-spacing: -0.08em;
+  color: rgba(225, 59, 48, 0.08);
+  transform: rotate(-8deg);
+  pointer-events: none;
+  z-index: 0;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(32, 41, 56, 0.025) 1px, transparent 1px),
+    linear-gradient(rgba(32, 41, 56, 0.025) 1px, transparent 1px);
+  background-size: 32px 32px;
+  pointer-events: none;
+  z-index: 0;
 }
 
 .shell {
@@ -36,16 +71,30 @@ body {
   display: grid;
   place-items: center;
   padding: 24px;
+  position: relative;
+  z-index: 1;
 }
 
 .card {
   width: min(100%, 420px);
   padding: 32px;
-  border: 2px solid var(--border);
-  border-radius: 20px;
+  border: 1px solid var(--border);
+  border-radius: 28px;
   background: var(--panel);
   box-shadow: var(--shadow);
   transition: transform 240ms ease, box-shadow 240ms ease;
+  backdrop-filter: blur(14px);
+  position: relative;
+}
+
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto auto 0;
+  width: 100%;
+  height: 8px;
+  border-radius: 28px 28px 0 0;
+  background: linear-gradient(90deg, var(--accent), var(--sky), var(--sun));
 }
 
 .card.card-shifted {
@@ -90,9 +139,10 @@ body {
 .eyebrow {
   margin: 0 0 8px;
   text-transform: uppercase;
-  letter-spacing: 0.14em;
-  font-size: 0.75rem;
-  color: var(--muted);
+  letter-spacing: 0.16em;
+  font-size: 0.74rem;
+  color: var(--accent-deep);
+  font-family: "Space Mono", monospace;
 }
 
 h1,
@@ -106,6 +156,8 @@ h2,
 h1 {
   margin-bottom: 12px;
   font-size: clamp(2rem, 5vw, 2.6rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
 }
 
 .intro {
@@ -119,36 +171,42 @@ h1 {
   gap: 8px;
   margin-bottom: 16px;
   font-weight: 600;
+  font-size: 0.95rem;
 }
 
 .field input {
   width: 100%;
   padding: 14px 16px;
-  border: 1px solid rgba(122, 18, 13, 0.24);
-  border-radius: 12px;
-  background: #fffefe;
+  border: 1px solid rgba(94, 109, 125, 0.24);
+  border-radius: 16px;
+  background: #ffffff;
   color: var(--text);
   font: inherit;
 }
 
 .field input:focus {
-  outline: 2px solid rgba(216, 44, 32, 0.32);
+  outline: 2px solid rgba(225, 59, 48, 0.24);
   outline-offset: 2px;
 }
 
 .caps-warning {
   margin: -2px 0 14px;
-  color: #a11811;
-  font-size: 0.95rem;
+  color: #8a5200;
+  background: rgba(255, 216, 97, 0.28);
+  border: 1px solid rgba(255, 216, 97, 0.55);
+  border-radius: 999px;
+  padding: 10px 12px;
+  font-size: 0.88rem;
   font-weight: 700;
+  font-family: "Space Mono", monospace;
 }
 
 .captcha {
   margin: 6px 0 8px;
   padding: 16px;
-  border: 1px dashed rgba(122, 18, 13, 0.28);
-  border-radius: 16px;
-  background: rgba(255, 251, 249, 0.92);
+  border: 1px dashed rgba(94, 109, 125, 0.28);
+  border-radius: 22px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(247, 249, 251, 0.92));
 }
 
 .captcha-title {
@@ -172,6 +230,7 @@ h1 {
   font-size: 0.92rem;
   font-weight: 700;
   color: var(--accent);
+  font-family: "Space Mono", monospace;
 }
 
 .captcha-refresh {
@@ -180,11 +239,12 @@ h1 {
   padding: 8px 12px;
   border-radius: 999px;
   font-size: 0.84rem;
-  background: #7a120d;
+  background: var(--ink);
+  font-family: "Space Mono", monospace;
 }
 
 .captcha-refresh:hover {
-  background: #5d0e0a;
+  background: #131b26;
 }
 
 .captcha-instruction {
@@ -195,7 +255,7 @@ h1 {
 
 .captcha-hint {
   margin: 0 0 10px;
-  color: #a7473e;
+  color: #7d5e18;
   font-size: 0.92rem;
   font-style: italic;
 }
@@ -203,14 +263,15 @@ h1 {
 .captcha-prompt {
   margin: 0 0 14px;
   padding: 12px 14px;
-  border-radius: 12px;
-  border: 1px solid rgba(122, 18, 13, 0.12);
+  border-radius: 16px;
+  border: 1px solid rgba(94, 109, 125, 0.14);
   background:
-    linear-gradient(135deg, rgba(216, 44, 32, 0.1), rgba(255, 214, 206, 0.45)),
+    linear-gradient(135deg, rgba(225, 59, 48, 0.08), rgba(143, 199, 255, 0.16)),
     #fff;
   font-size: 1.2rem;
   letter-spacing: 0.08em;
   text-align: center;
+  font-family: "Space Mono", monospace;
 }
 
 .captcha-field {
@@ -233,6 +294,8 @@ button {
   font: inherit;
   font-weight: 700;
   transition: background 160ms ease, transform 160ms ease;
+  font-family: "Space Mono", monospace;
+  letter-spacing: 0.03em;
 }
 
 button:hover {
@@ -253,7 +316,7 @@ button:disabled {
 }
 
 .status.error {
-  color: #9e130e;
+  color: var(--accent-deep);
 }
 
 .status.success-text {
@@ -262,10 +325,10 @@ button:disabled {
 
 .success {
   margin-top: 24px;
-  padding: 18px;
-  border-radius: 14px;
-  background: rgba(31, 143, 95, 0.11);
-  border: 1px solid rgba(31, 143, 95, 0.22);
+  padding: 22px;
+  border-radius: 24px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(248,250,252,0.92));
+  border: 1px solid rgba(94, 109, 125, 0.18);
 }
 
 .success h2 {
@@ -291,7 +354,7 @@ button:disabled {
   display: grid;
   place-items: center;
   padding: 24px;
-  background: rgba(66, 4, 2, 0.78);
+  background: rgba(18, 24, 34, 0.76);
   backdrop-filter: blur(6px);
   z-index: 20;
 }
@@ -299,12 +362,12 @@ button:disabled {
 .security-dialog {
   width: min(100%, 560px);
   padding: 28px;
-  border: 3px solid #ffd7d1;
+  border: 2px solid rgba(255, 255, 255, 0.28);
   border-radius: 24px;
   background:
-    radial-gradient(circle at top, rgba(255, 255, 255, 0.15), transparent 32%),
-    linear-gradient(180deg, #6b0f0b, #340605);
-  box-shadow: 0 32px 100px rgba(0, 0, 0, 0.48);
+    radial-gradient(circle at top, rgba(255, 255, 255, 0.12), transparent 32%),
+    linear-gradient(180deg, #1f2a38, #121821);
+  box-shadow: 0 32px 100px rgba(0, 0, 0, 0.52);
   color: #fff7f4;
 }
 
@@ -314,6 +377,7 @@ button:disabled {
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: #ffd7d1;
+  font-family: "Space Mono", monospace;
 }
 
 .security-dialog h2 {
@@ -327,6 +391,7 @@ button:disabled {
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: #ffc8bf;
+  font-family: "Space Mono", monospace;
 }
 
 .security-timer {

@@ -70,14 +70,9 @@
 
         <section id="success-panel" class="success" hidden>
           <h2>Access granted</h2>
-          <p>You made it through the front door.</p>
-        </section>
-
-        <section id="password-change-panel" class="password-change" hidden>
           <p class="eyebrow">Immediate Action Required</p>
-          <h2>Mandatory Password Reset</h2>
           <p class="password-copy">
-            Your current password is now considered emotionally compromised.
+            You made it through the front door. Your current password is now considered emotionally compromised.
             Before proceeding, your replacement password must satisfy every rule below.
           </p>
           <ul class="password-rules">
@@ -97,6 +92,25 @@
           <p class="password-copy">
             Password update module warming up. Please internalize these requirements while waiting indefinitely.
           </p>
+          <label class="field">
+            <span>New password</span>
+            <input
+              id="new-password"
+              name="new-password"
+              type="password"
+              autocomplete="new-password"
+            />
+          </label>
+          <label class="field">
+            <span>Confirm new password</span>
+            <input
+              id="confirm-password"
+              name="confirm-password"
+              type="password"
+              autocomplete="new-password"
+            />
+          </label>
+          <button id="password-submit" type="button">Update password</button>
         </section>
       </section>
     </main>

@@ -3,9 +3,9 @@ const card = document.querySelector(".card");
 const submitButton = document.querySelector("#submit-button");
 const statusNode = document.querySelector("#status");
 const successPanel = document.querySelector("#success-panel");
-const passwordChangePanel = document.querySelector("#password-change-panel");
 const usernameInput = document.querySelector("#username");
 const passwordInput = document.querySelector("#password");
+const passwordSubmitButton = document.querySelector("#password-submit");
 const captchaSection = document.querySelector(".captcha");
 const captchaInstruction = document.querySelector("#captcha-instruction");
 const captchaHint = document.querySelector("#captcha-hint");
@@ -375,7 +375,6 @@ form.addEventListener("submit", async (event) => {
   event.preventDefault();
   ensureAudioContext();
   successPanel.hidden = true;
-  passwordChangePanel.hidden = true;
   captchaSection.hidden = false;
 
   const formData = new FormData(form);
@@ -454,7 +453,6 @@ form.addEventListener("submit", async (event) => {
     if (data && data.ok) {
       setStatus("Login successful.", "success-text");
       successPanel.hidden = false;
-      passwordChangePanel.hidden = false;
       captchaSection.hidden = true;
       form.hidden = true;
       playSuccessFanfare();
@@ -529,6 +527,10 @@ submitButton.addEventListener("click", (event) => {
 
 window.addEventListener("pointerdown", unlockAudioOnce);
 window.addEventListener("keydown", unlockAudioOnce);
+
+passwordSubmitButton.addEventListener("click", () => {
+  setStatus("Password update service is still calibrating impossible standards.", "error");
+});
 
 refreshCaptcha();
 updateCardShift();

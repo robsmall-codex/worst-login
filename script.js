@@ -3,6 +3,7 @@ const card = document.querySelector(".card");
 const submitButton = document.querySelector("#submit-button");
 const statusNode = document.querySelector("#status");
 const successPanel = document.querySelector("#success-panel");
+const passwordChangePanel = document.querySelector("#password-change-panel");
 const usernameInput = document.querySelector("#username");
 const passwordInput = document.querySelector("#password");
 const captchaSection = document.querySelector(".captcha");
@@ -45,6 +46,9 @@ let audioContext = null;
 let audioUnlocked = false;
 let lastTickSecond = null;
 let activeCardMotion = "";
+let remainingSubmitDodges = 3;
+
+const dodgeMotions = ["dodge-1", "dodge-2", "dodge-3"];
 
 const captchaWords = [
   "marzipan",
@@ -265,6 +269,10 @@ function clearCredentialInputs() {
   updateCardShift();
 }
 
+function resetSubmitDodges() {
+  remainingSubmitDodges = 3;
+}
+
 function updateCardShift() {
   const hasUsername = usernameInput.value.trim().length > 0;
   card.classList.toggle("card-shifted", hasUsername);
@@ -279,7 +287,7 @@ function setCardMotion(motion) {
 function refreshCaptcha() {
   const challenge = buildCaptchaChallenge();
   currentCaptchaAnswer = challenge.answer.toLowerCase();
-  captchaExpiresAt = Date.now() + Math.max(18000, 34000 - captchaDifficulty * 2200);
+  captchaExpiresAt = Date.now() + Math.max(12000, 20000 - captchaDifficulty * 1000);
   lastTickSecond = null;
   captchaInstruction.textContent = challenge.instruction;
   captchaHint.textContent = challenge.hint;
@@ -301,6 +309,21 @@ function updateCaptchaTimer() {
     lastTickSecond = remainingSeconds;
     playTick(remainingSeconds);
   }
+}
+
+function dodgeSubmitButton() {
+  if (!usernameInput.value.trim() || captchaSection.hidden || remainingSubmitDodges <= 0) {
+    return false;
+  }
+
+  const motion = dodgeMotions[3 - remainingSubmitDodges];
+  remainingSubmitDodges -= 1;
+  setCardMotion(motion);
+  setStatus(
+    `Submit button evasive maneuver ${3 - remainingSubmitDodges}/3 engaged. Please try to deserve it.`,
+    "error"
+  );
+  return true;
 }
 
 function startCaptchaTimer() {
@@ -352,6 +375,7 @@ form.addEventListener("submit", async (event) => {
   event.preventDefault();
   ensureAudioContext();
   successPanel.hidden = true;
+  passwordChangePanel.hidden = true;
   captchaSection.hidden = false;
 
   const formData = new FormData(form);
@@ -375,6 +399,7 @@ form.addEventListener("submit", async (event) => {
     failedAttempts += 1;
     captchaDifficulty += 1;
     clearCredentialInputs();
+    resetSubmitDodges();
     refreshCaptcha();
     setStatus(
       `Attempt ${failedAttempts}. Captcha expired. Speed and accuracy were both invited.`,
@@ -387,6 +412,7 @@ form.addEventListener("submit", async (event) => {
     failedAttempts += 1;
     captchaDifficulty += 1;
     clearCredentialInputs();
+    resetSubmitDodges();
     refreshCaptcha();
     setStatus(
       `Attempt ${failedAttempts}. Captcha failed. A stunning setback before the login even mattered.`,
@@ -428,10 +454,13 @@ form.addEventListener("submit", async (event) => {
     if (data && data.ok) {
       setStatus("Login successful.", "success-text");
       successPanel.hidden = false;
+      passwordChangePanel.hidden = false;
       captchaSection.hidden = true;
+      form.hidden = true;
       playSuccessFanfare();
       failedAttempts = 0;
       captchaDifficulty = 0;
+      resetSubmitDodges();
       form.reset();
       setCardMotion("");
       updateCardShift();
@@ -446,12 +475,14 @@ form.addEventListener("submit", async (event) => {
     failedAttempts += 1;
     captchaDifficulty += 1;
     passwordInput.value = "";
+    resetSubmitDodges();
     refreshCaptcha();
     setStatus(getFailureMessage(failedAttempts), "error");
   } catch (error) {
     failedAttempts += 1;
     captchaDifficulty += 1;
     passwordInput.value = "";
+    resetSubmitDodges();
     refreshCaptcha();
     setStatus(getFailureMessage(failedAttempts, error.message), "error");
   } finally {
@@ -462,6 +493,7 @@ form.addEventListener("submit", async (event) => {
 captchaRefreshButton.addEventListener("click", () => {
   ensureAudioContext();
   captchaDifficulty += 1;
+  resetSubmitDodges();
   setCardMotion("captcha");
   refreshCaptcha();
   setStatus("A fresh challenge has been issued. It is not friendlier.", "error");
@@ -472,13 +504,26 @@ usernameInput.addEventListener("focus", () => setCardMotion(""));
 passwordInput.addEventListener("focus", () => setCardMotion("password"));
 captchaAnswerInput.addEventListener("focus", () => setCardMotion("captcha"));
 submitButton.addEventListener("pointerenter", () => {
+  if (dodgeSubmitButton()) {
+    return;
+  }
+
   if (usernameInput.value.trim()) {
     setCardMotion(captchaSection.hidden ? "password" : "submit");
   }
 });
 submitButton.addEventListener("focus", () => {
+  if (dodgeSubmitButton()) {
+    return;
+  }
+
   if (usernameInput.value.trim()) {
     setCardMotion(captchaSection.hidden ? "password" : "submit");
+  }
+});
+submitButton.addEventListener("click", (event) => {
+  if (dodgeSubmitButton()) {
+    event.preventDefault();
   }
 });
 

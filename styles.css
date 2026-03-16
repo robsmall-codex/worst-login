@@ -64,6 +64,21 @@ body {
   box-shadow: 0 48px 132px rgba(122, 18, 13, 0.46);
 }
 
+.card[data-motion="dodge-1"] {
+  transform: translate(-54px, -18px) rotate(-0.8deg);
+  box-shadow: 0 48px 132px rgba(122, 18, 13, 0.46);
+}
+
+.card[data-motion="dodge-2"] {
+  transform: translate(104px, -26px) rotate(0.9deg);
+  box-shadow: 0 52px 138px rgba(122, 18, 13, 0.5);
+}
+
+.card[data-motion="dodge-3"] {
+  transform: translate(-78px, 24px) rotate(-1deg);
+  box-shadow: 0 54px 142px rgba(122, 18, 13, 0.52);
+}
+
 .eyebrow {
   margin: 0 0 8px;
   text-transform: uppercase;
@@ -242,6 +257,31 @@ button:disabled {
   margin-bottom: 8px;
 }
 
+.password-change {
+  margin-top: 24px;
+  padding: 22px;
+  border-radius: 18px;
+  background: rgba(122, 18, 13, 0.09);
+  border: 1px solid rgba(122, 18, 13, 0.2);
+}
+
+.password-change h2 {
+  margin: 0 0 10px;
+}
+
+.password-copy {
+  margin: 0 0 14px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.password-rules {
+  margin: 0 0 14px;
+  padding-left: 22px;
+  display: grid;
+  gap: 8px;
+}
+
 @media (max-width: 640px) {
   .card.card-shifted {
     transform: translateX(18px);
@@ -257,5 +297,17 @@ button:disabled {
 
   .card[data-motion="submit"] {
     transform: translate(40px, 10px);
+  }
+
+  .card[data-motion="dodge-1"] {
+    transform: translate(-12px, -8px);
+  }
+
+  .card[data-motion="dodge-2"] {
+    transform: translate(34px, -12px);
+  }
+
+  .card[data-motion="dodge-3"] {
+    transform: translate(-18px, 12px);
   }
 }

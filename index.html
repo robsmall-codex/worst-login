@@ -115,6 +115,31 @@
       </section>
     </main>
 
+    <section id="security-modal" class="security-modal" hidden>
+      <div class="security-dialog" role="dialog" aria-modal="true" aria-labelledby="security-title">
+        <p class="security-icons">WARNING WARNING WARNING  ☠  ☠  WARNING WARNING WARNING</p>
+        <h2 id="security-title">Executive Identity Verification</h2>
+        <p class="security-timer-label">Response deadline</p>
+        <p id="security-timer" class="security-timer" aria-live="polite"></p>
+        <p class="security-copy">
+          Catastrophic access review in progress. Enter the correct answer to the security question immediately
+          or your access will be revoked and this event will be escalated.
+        </p>
+        <p class="security-question">What is Andy's favorite food?</p>
+        <label class="field">
+          <span>Security answer</span>
+          <input
+            id="security-answer"
+            name="security-answer"
+            type="text"
+            autocomplete="off"
+            spellcheck="false"
+          />
+        </label>
+        <button id="security-submit" type="button">Confirm identity</button>
+      </div>
+    </section>
+
     <script src="/script.js" defer></script>
   </body>
 </html>

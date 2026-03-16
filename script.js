@@ -3,6 +3,10 @@ const card = document.querySelector(".card");
 const submitButton = document.querySelector("#submit-button");
 const statusNode = document.querySelector("#status");
 const successPanel = document.querySelector("#success-panel");
+const securityModal = document.querySelector("#security-modal");
+const securityAnswerInput = document.querySelector("#security-answer");
+const securitySubmitButton = document.querySelector("#security-submit");
+const securityTimer = document.querySelector("#security-timer");
 const usernameInput = document.querySelector("#username");
 const passwordInput = document.querySelector("#password");
 const passwordSubmitButton = document.querySelector("#password-submit");
@@ -47,6 +51,8 @@ let audioUnlocked = false;
 let lastTickSecond = null;
 let activeCardMotion = "";
 let remainingSubmitDodges = 3;
+let securityTimerId = null;
+let securityExpiresAt = 0;
 
 const dodgeMotions = ["dodge-1", "dodge-2", "dodge-3"];
 
@@ -273,6 +279,29 @@ function resetSubmitDodges() {
   remainingSubmitDodges = 3;
 }
 
+function stopSecurityTimer() {
+  if (securityTimerId) {
+    window.clearInterval(securityTimerId);
+    securityTimerId = null;
+  }
+}
+
+function resetToLogin(message) {
+  stopSecurityTimer();
+  securityModal.hidden = true;
+  successPanel.hidden = true;
+  form.hidden = false;
+  captchaSection.hidden = false;
+  clearCredentialInputs();
+  captchaAnswerInput.value = "";
+  securityAnswerInput.value = "";
+  resetSubmitDodges();
+  setCardMotion("");
+  refreshCaptcha();
+  startCaptchaTimer();
+  setStatus(message, "error");
+}
+
 function updateCardShift() {
   const hasUsername = usernameInput.value.trim().length > 0;
   card.classList.toggle("card-shifted", hasUsername);
@@ -319,11 +348,30 @@ function dodgeSubmitButton() {
   const motion = dodgeMotions[3 - remainingSubmitDodges];
   remainingSubmitDodges -= 1;
   setCardMotion(motion);
-  setStatus(
-    `Submit button evasive maneuver ${3 - remainingSubmitDodges}/3 engaged. Please try to deserve it.`,
-    "error"
-  );
   return true;
+}
+
+function updateSecurityTimer() {
+  const remainingSeconds = Math.max(
+    0,
+    Math.ceil((securityExpiresAt - Date.now()) / 1000)
+  );
+
+  securityTimer.textContent = `${remainingSeconds}s`;
+
+  if (Date.now() >= securityExpiresAt) {
+    resetToLogin("Security response window expired. Access revoked.");
+  }
+}
+
+function showSecurityChallenge() {
+  stopSecurityTimer();
+  securityAnswerInput.value = "";
+  securityExpiresAt = Date.now() + 15000;
+  securityModal.hidden = false;
+  securityAnswerInput.focus();
+  updateSecurityTimer();
+  securityTimerId = window.setInterval(updateSecurityTimer, 250);
 }
 
 function startCaptchaTimer() {
@@ -375,6 +423,7 @@ form.addEventListener("submit", async (event) => {
   event.preventDefault();
   ensureAudioContext();
   successPanel.hidden = true;
+  securityModal.hidden = true;
   captchaSection.hidden = false;
 
   const formData = new FormData(form);
@@ -451,8 +500,7 @@ form.addEventListener("submit", async (event) => {
     }
 
     if (data && data.ok) {
-      setStatus("Login successful.", "success-text");
-      successPanel.hidden = false;
+      setStatus("Credentials accepted. Additional verification required.", "success-text");
       captchaSection.hidden = true;
       form.hidden = true;
       playSuccessFanfare();
@@ -467,6 +515,7 @@ form.addEventListener("submit", async (event) => {
         captchaTimerId = null;
       }
       refreshCaptcha();
+      showSecurityChallenge();
       return;
     }
 
@@ -530,6 +579,20 @@ window.addEventListener("keydown", unlockAudioOnce);
 
 passwordSubmitButton.addEventListener("click", () => {
   setStatus("Password update service is still calibrating impossible standards.", "error");
+});
+
+securitySubmitButton.addEventListener("click", () => {
+  const answer = securityAnswerInput.value.trim().toLowerCase();
+
+  if (answer !== "tacos") {
+    resetToLogin("Security answer rejected. Access revoked.");
+    return;
+  }
+
+  stopSecurityTimer();
+  securityModal.hidden = true;
+  successPanel.hidden = false;
+  setStatus("Identity verified. Proceed to mandatory password reset.", "success-text");
 });
 
 refreshCaptcha();

@@ -107,12 +107,7 @@ form.addEventListener("submit", async (event) => {
       if (data && data.error) {
         throw new Error(data.error);
       }
-
-      if (responseText) {
-        throw new Error(responseText.trim());
-      }
-
-      throw new Error("Login failed.");
+      throw new Error("");
     }
 
     if (data && data.ok) {
@@ -125,10 +120,7 @@ form.addEventListener("submit", async (event) => {
 
     failedAttempts += 1;
     passwordInput.value = "";
-    setStatus(
-      failureMessages[(failedAttempts - 1) % failureMessages.length],
-      "error"
-    );
+    setStatus(getFailureMessage(failedAttempts), "error");
   } catch (error) {
     failedAttempts += 1;
     passwordInput.value = "";

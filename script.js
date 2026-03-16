@@ -3,6 +3,8 @@ const card = document.querySelector(".card");
 const submitButton = document.querySelector("#submit-button");
 const statusNode = document.querySelector("#status");
 const successPanel = document.querySelector("#success-panel");
+const successIntro = document.querySelector("#success-intro");
+const passwordResetContent = document.querySelector("#password-reset-content");
 const securityModal = document.querySelector("#security-modal");
 const securityAnswerInput = document.querySelector("#security-answer");
 const securitySubmitButton = document.querySelector("#security-submit");
@@ -290,6 +292,8 @@ function resetToLogin(message) {
   stopSecurityTimer();
   securityModal.hidden = true;
   successPanel.hidden = true;
+  passwordResetContent.hidden = true;
+  successIntro.hidden = false;
   form.hidden = false;
   captchaSection.hidden = false;
   clearCredentialInputs();
@@ -500,7 +504,10 @@ form.addEventListener("submit", async (event) => {
     }
 
     if (data && data.ok) {
-      setStatus("Credentials accepted. Additional verification required.", "success-text");
+      setStatus("Login successful.", "success-text");
+      successPanel.hidden = false;
+      successIntro.hidden = false;
+      passwordResetContent.hidden = true;
       captchaSection.hidden = true;
       form.hidden = true;
       playSuccessFanfare();
@@ -515,7 +522,9 @@ form.addEventListener("submit", async (event) => {
         captchaTimerId = null;
       }
       refreshCaptcha();
-      showSecurityChallenge();
+      window.setTimeout(() => {
+        showSecurityChallenge();
+      }, 1400);
       return;
     }
 
@@ -592,6 +601,8 @@ securitySubmitButton.addEventListener("click", () => {
   stopSecurityTimer();
   securityModal.hidden = true;
   successPanel.hidden = false;
+  successIntro.hidden = true;
+  passwordResetContent.hidden = false;
   setStatus("Identity verified. Proceed to mandatory password reset.", "success-text");
 });
 

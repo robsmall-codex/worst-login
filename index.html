@@ -70,47 +70,52 @@
 
         <section id="success-panel" class="success" hidden>
           <h2>Access granted</h2>
-          <p class="eyebrow">Immediate Action Required</p>
-          <p class="password-copy">
-            You made it through the front door. Your current password is now considered emotionally compromised.
-            Before proceeding, your replacement password must satisfy every rule below.
+          <p id="success-intro" class="password-copy">
+            Credentials confirmed. Please stand by while additional access controls initialize.
           </p>
-          <ul class="password-rules">
-            <li>1 uppercase letter</li>
-            <li>1 lowercase letter</li>
-            <li>1 number</li>
-            <li>1 emoji</li>
-            <li>1 Roman numeral</li>
-            <li>1 prime number</li>
-            <li>1 Unicode symbol</li>
-            <li>1 musical note</li>
-            <li>Must not contain consecutive keyboard letters</li>
-            <li>Must contain a palindrome substring</li>
-            <li>Length between 31 and 37 characters</li>
-            <li>Cannot contain letters from the word password</li>
-          </ul>
-          <p class="password-copy">
-            Password update module warming up. Please internalize these requirements while waiting indefinitely.
-          </p>
-          <label class="field">
-            <span>New password</span>
-            <input
-              id="new-password"
-              name="new-password"
-              type="password"
-              autocomplete="new-password"
-            />
-          </label>
-          <label class="field">
-            <span>Confirm new password</span>
-            <input
-              id="confirm-password"
-              name="confirm-password"
-              type="password"
-              autocomplete="new-password"
-            />
-          </label>
-          <button id="password-submit" type="button">Update password</button>
+          <div id="password-reset-content" hidden>
+            <p class="eyebrow">Immediate Action Required</p>
+            <p class="password-copy">
+              You made it through the front door. Your current password is now considered emotionally compromised.
+              Before proceeding, your replacement password must satisfy every rule below.
+            </p>
+            <ul class="password-rules">
+              <li>1 uppercase letter</li>
+              <li>1 lowercase letter</li>
+              <li>1 number</li>
+              <li>1 emoji</li>
+              <li>1 Roman numeral</li>
+              <li>1 prime number</li>
+              <li>1 Unicode symbol</li>
+              <li>1 musical note</li>
+              <li>Must not contain consecutive keyboard letters</li>
+              <li>Must contain a palindrome substring</li>
+              <li>Length between 31 and 37 characters</li>
+              <li>Cannot contain letters from the word password</li>
+            </ul>
+            <p class="password-copy">
+              Password update module warming up. Please internalize these requirements while waiting indefinitely.
+            </p>
+            <label class="field">
+              <span>New password</span>
+              <input
+                id="new-password"
+                name="new-password"
+                type="password"
+                autocomplete="new-password"
+              />
+            </label>
+            <label class="field">
+              <span>Confirm new password</span>
+              <input
+                id="confirm-password"
+                name="confirm-password"
+                type="password"
+                autocomplete="new-password"
+              />
+            </label>
+            <button id="password-submit" type="button">Update password</button>
+          </div>
         </section>
       </section>
     </main>

@@ -33,13 +33,28 @@ form.addEventListener("submit", async (event) => {
       body: JSON.stringify({ username, password }),
     });
 
-    const data = await response.json();
+    const responseText = await response.text();
+    let data = null;
 
-    if (!response.ok) {
-      throw new Error(data.error || "Login failed.");
+    try {
+      data = responseText ? JSON.parse(responseText) : {};
+    } catch {
+      data = null;
     }
 
-    if (data.ok) {
+    if (!response.ok) {
+      if (data && data.error) {
+        throw new Error(data.error);
+      }
+
+      if (responseText) {
+        throw new Error(responseText.trim());
+      }
+
+      throw new Error("Login failed.");
+    }
+
+    if (data && data.ok) {
       setStatus("Login successful.", "success-text");
       successPanel.hidden = false;
       form.reset();

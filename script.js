@@ -2,7 +2,9 @@ const form = document.querySelector("#login-form");
 const submitButton = document.querySelector("#submit-button");
 const statusNode = document.querySelector("#status");
 const successPanel = document.querySelector("#success-panel");
+const usernameInput = document.querySelector("#username");
 const passwordInput = document.querySelector("#password");
+const captchaSection = document.querySelector(".captcha");
 const captchaInstruction = document.querySelector("#captcha-instruction");
 const captchaHint = document.querySelector("#captcha-hint");
 const captchaPrompt = document.querySelector("#captcha-prompt");
@@ -214,6 +216,28 @@ function playTimeoutAlarm() {
   }, 300);
 }
 
+function playSuccessFanfare() {
+  const notes = [
+    { frequency: 523.25, duration: 0.16, delay: 0 },
+    { frequency: 659.25, duration: 0.16, delay: 170 },
+    { frequency: 783.99, duration: 0.16, delay: 340 },
+    { frequency: 1046.5, duration: 0.28, delay: 520 },
+    { frequency: 783.99, duration: 0.18, delay: 860 },
+    { frequency: 1046.5, duration: 0.4, delay: 1040 },
+  ];
+
+  notes.forEach((note) => {
+    window.setTimeout(() => {
+      playTone({
+        frequency: note.frequency,
+        duration: note.duration,
+        type: "triangle",
+        volume: 0.14,
+      });
+    }, note.delay);
+  });
+}
+
 function unlockAudioOnce() {
   ensureAudioContext();
   window.removeEventListener("pointerdown", unlockAudioOnce);
@@ -223,6 +247,11 @@ function unlockAudioOnce() {
 function setStatus(message, type = "") {
   statusNode.textContent = message;
   statusNode.className = `status${type ? ` ${type}` : ""}`;
+}
+
+function clearCredentialInputs() {
+  usernameInput.value = "";
+  passwordInput.value = "";
 }
 
 function refreshCaptcha() {
@@ -264,6 +293,7 @@ function startCaptchaTimer() {
       captchaDifficulty += 1;
       playTimeoutAlarm();
       refreshCaptcha();
+      clearCredentialInputs();
       setStatus("Captcha expired. The replacement is less cooperative.", "error");
     }
   }, 250);
@@ -300,6 +330,7 @@ form.addEventListener("submit", async (event) => {
   event.preventDefault();
   ensureAudioContext();
   successPanel.hidden = true;
+  captchaSection.hidden = false;
 
   const formData = new FormData(form);
   const username = String(formData.get("username") || "").trim();
@@ -321,7 +352,7 @@ form.addEventListener("submit", async (event) => {
   if (Date.now() >= captchaExpiresAt) {
     failedAttempts += 1;
     captchaDifficulty += 1;
-    passwordInput.value = "";
+    clearCredentialInputs();
     refreshCaptcha();
     setStatus(
       `Attempt ${failedAttempts}. Captcha expired. Speed and accuracy were both invited.`,
@@ -333,7 +364,7 @@ form.addEventListener("submit", async (event) => {
   if (captchaAnswer !== currentCaptchaAnswer) {
     failedAttempts += 1;
     captchaDifficulty += 1;
-    passwordInput.value = "";
+    clearCredentialInputs();
     refreshCaptcha();
     setStatus(
       `Attempt ${failedAttempts}. Captcha failed. A stunning setback before the login even mattered.`,
@@ -375,9 +406,15 @@ form.addEventListener("submit", async (event) => {
     if (data && data.ok) {
       setStatus("Login successful.", "success-text");
       successPanel.hidden = false;
+      captchaSection.hidden = true;
+      playSuccessFanfare();
       failedAttempts = 0;
       captchaDifficulty = 0;
       form.reset();
+      if (captchaTimerId) {
+        window.clearInterval(captchaTimerId);
+        captchaTimerId = null;
+      }
       refreshCaptcha();
       return;
     }

@@ -49,6 +49,21 @@ body {
   box-shadow: 0 38px 110px rgba(122, 18, 13, 0.38);
 }
 
+.card[data-motion="password"] {
+  transform: translate(58px, 10px) rotate(0.4deg);
+  box-shadow: 0 40px 118px rgba(122, 18, 13, 0.4);
+}
+
+.card[data-motion="captcha"] {
+  transform: translate(70px, -8px) rotate(-0.5deg);
+  box-shadow: 0 44px 124px rgba(122, 18, 13, 0.42);
+}
+
+.card[data-motion="submit"] {
+  transform: translate(88px, 14px) rotate(0.6deg);
+  box-shadow: 0 48px 132px rgba(122, 18, 13, 0.46);
+}
+
 .eyebrow {
   margin: 0 0 8px;
   text-transform: uppercase;
@@ -230,5 +245,17 @@ button:disabled {
 @media (max-width: 640px) {
   .card.card-shifted {
     transform: translateX(18px);
+  }
+
+  .card[data-motion="password"] {
+    transform: translate(26px, 8px);
+  }
+
+  .card[data-motion="captcha"] {
+    transform: translate(32px, -4px);
+  }
+
+  .card[data-motion="submit"] {
+    transform: translate(40px, 10px);
   }
 }

@@ -44,6 +44,7 @@ let captchaTimerId = null;
 let audioContext = null;
 let audioUnlocked = false;
 let lastTickSecond = null;
+let activeCardMotion = "";
 
 const captchaWords = [
   "marzipan",
@@ -189,13 +190,19 @@ function playTone({ frequency, duration, type = "square", volume = 0.08 }) {
 }
 
 function playTick(remainingSeconds) {
-  const urgencyBoost = remainingSeconds <= 5 ? 120 : 0;
+  const urgencyBoost = remainingSeconds <= 5 ? 220 : remainingSeconds <= 10 ? 120 : 0;
+  const volume =
+    remainingSeconds <= 3 ? 0.28 :
+    remainingSeconds <= 5 ? 0.22 :
+    remainingSeconds <= 10 ? 0.15 :
+    0.08;
+  const duration = remainingSeconds <= 5 ? 0.12 : 0.09;
 
   playTone({
     frequency: 880 + urgencyBoost,
-    duration: 0.09,
+    duration,
     type: "square",
-    volume: remainingSeconds <= 5 ? 0.16 : 0.11,
+    volume,
   });
 }
 
@@ -257,13 +264,20 @@ function clearCredentialInputs() {
 }
 
 function updateCardShift() {
-  card.classList.toggle("card-shifted", usernameInput.value.trim().length > 0);
+  const hasUsername = usernameInput.value.trim().length > 0;
+  card.classList.toggle("card-shifted", hasUsername);
+  card.dataset.motion = activeCardMotion;
+}
+
+function setCardMotion(motion) {
+  activeCardMotion = motion;
+  updateCardShift();
 }
 
 function refreshCaptcha() {
   const challenge = buildCaptchaChallenge();
   currentCaptchaAnswer = challenge.answer.toLowerCase();
-  captchaExpiresAt = Date.now() + Math.max(7000, 18000 - captchaDifficulty * 1800);
+  captchaExpiresAt = Date.now() + Math.max(18000, 34000 - captchaDifficulty * 2200);
   lastTickSecond = null;
   captchaInstruction.textContent = challenge.instruction;
   captchaHint.textContent = challenge.hint;
@@ -417,6 +431,7 @@ form.addEventListener("submit", async (event) => {
       failedAttempts = 0;
       captchaDifficulty = 0;
       form.reset();
+      setCardMotion("");
       updateCardShift();
       if (captchaTimerId) {
         window.clearInterval(captchaTimerId);
@@ -445,11 +460,25 @@ form.addEventListener("submit", async (event) => {
 captchaRefreshButton.addEventListener("click", () => {
   ensureAudioContext();
   captchaDifficulty += 1;
+  setCardMotion("captcha");
   refreshCaptcha();
   setStatus("A fresh challenge has been issued. It is not friendlier.", "error");
 });
 
 usernameInput.addEventListener("input", updateCardShift);
+usernameInput.addEventListener("focus", () => setCardMotion(""));
+passwordInput.addEventListener("focus", () => setCardMotion("password"));
+captchaAnswerInput.addEventListener("focus", () => setCardMotion("captcha"));
+submitButton.addEventListener("pointerenter", () => {
+  if (usernameInput.value.trim()) {
+    setCardMotion(captchaSection.hidden ? "password" : "submit");
+  }
+});
+submitButton.addEventListener("focus", () => {
+  if (usernameInput.value.trim()) {
+    setCardMotion(captchaSection.hidden ? "password" : "submit");
+  }
+});
 
 window.addEventListener("pointerdown", unlockAudioOnce);
 window.addEventListener("keydown", unlockAudioOnce);

@@ -226,12 +226,14 @@ function playTimeoutAlarm() {
 
 function playSuccessFanfare() {
   const notes = [
-    { frequency: 523.25, duration: 0.16, delay: 0 },
-    { frequency: 659.25, duration: 0.16, delay: 170 },
-    { frequency: 783.99, duration: 0.16, delay: 340 },
-    { frequency: 1046.5, duration: 0.28, delay: 520 },
-    { frequency: 783.99, duration: 0.18, delay: 860 },
-    { frequency: 1046.5, duration: 0.4, delay: 1040 },
+    { frequency: 392.0, duration: 0.11, delay: 0, volume: 0.13 },
+    { frequency: 369.99, duration: 0.11, delay: 120, volume: 0.13 },
+    { frequency: 311.13, duration: 0.11, delay: 240, volume: 0.13 },
+    { frequency: 440.0, duration: 0.12, delay: 360, volume: 0.14 },
+    { frequency: 415.3, duration: 0.12, delay: 500, volume: 0.145 },
+    { frequency: 523.25, duration: 0.13, delay: 650, volume: 0.155 },
+    { frequency: 587.33, duration: 0.14, delay: 820, volume: 0.16 },
+    { frequency: 783.99, duration: 0.42, delay: 1000, volume: 0.19 },
   ];
 
   notes.forEach((note) => {
@@ -239,8 +241,8 @@ function playSuccessFanfare() {
       playTone({
         frequency: note.frequency,
         duration: note.duration,
-        type: "triangle",
-        volume: 0.14,
+        type: "square",
+        volume: note.volume,
       });
     }, note.delay);
   });

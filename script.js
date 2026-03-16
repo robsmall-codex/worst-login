@@ -1,4 +1,5 @@
 const form = document.querySelector("#login-form");
+const card = document.querySelector(".card");
 const submitButton = document.querySelector("#submit-button");
 const statusNode = document.querySelector("#status");
 const successPanel = document.querySelector("#success-panel");
@@ -252,6 +253,11 @@ function setStatus(message, type = "") {
 function clearCredentialInputs() {
   usernameInput.value = "";
   passwordInput.value = "";
+  updateCardShift();
+}
+
+function updateCardShift() {
+  card.classList.toggle("card-shifted", usernameInput.value.trim().length > 0);
 }
 
 function refreshCaptcha() {
@@ -411,6 +417,7 @@ form.addEventListener("submit", async (event) => {
       failedAttempts = 0;
       captchaDifficulty = 0;
       form.reset();
+      updateCardShift();
       if (captchaTimerId) {
         window.clearInterval(captchaTimerId);
         captchaTimerId = null;
@@ -442,8 +449,11 @@ captchaRefreshButton.addEventListener("click", () => {
   setStatus("A fresh challenge has been issued. It is not friendlier.", "error");
 });
 
+usernameInput.addEventListener("input", updateCardShift);
+
 window.addEventListener("pointerdown", unlockAudioOnce);
 window.addEventListener("keydown", unlockAudioOnce);
 
 refreshCaptcha();
+updateCardShift();
 startCaptchaTimer();

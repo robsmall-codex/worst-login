@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Worst Login</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <section class="card" aria-labelledby="login-title">
+        <p class="eyebrow">Demo Authentication</p>
+        <h1 id="login-title">Log in</h1>
+        <p class="intro">
+          Enter one of the accepted demo credentials to continue.
+        </p>
+
+        <form id="login-form" novalidate>
+          <label class="field">
+            <span>Username</span>
+            <input
+              id="username"
+              name="username"
+              type="text"
+              autocomplete="username"
+              required
+            />
+          </label>
+
+          <label class="field">
+            <span>Password</span>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              autocomplete="current-password"
+              required
+            />
+          </label>
+
+          <button id="submit-button" type="submit">Log in</button>
+        </form>
+
+        <p id="status" class="status" role="status" aria-live="polite"></p>
+
+        <section id="success-panel" class="success" hidden>
+          <h2>Access granted</h2>
+          <p>You made it through the front door.</p>
+        </section>
+      </section>
+    </main>
+
+    <script src="/script.js" defer></script>
+  </body>
+</html>

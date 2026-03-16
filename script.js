@@ -4,12 +4,27 @@ const statusNode = document.querySelector("#status");
 const successPanel = document.querySelector("#success-panel");
 const passwordInput = document.querySelector("#password");
 
-const failureMessages = [
-  "Those credentials felt spiritually incorrect.",
-  "Login denied. Please try again with more confidence.",
-  "Still no. The system remains unconvinced.",
-  "Incorrect. Have you considered remembering better?",
-  "Access denied. The gatekeepers are unimpressed.",
+const humiliationTiers = [
+  [
+    "Those credentials felt spiritually incorrect.",
+    "Login denied. Please try again with more confidence.",
+    "Still no. The system remains unconvinced.",
+  ],
+  [
+    "Incorrect again. A bold strategy, if not an effective one.",
+    "The machine reviewed your effort and sighed.",
+    "No luck. We are entering concerning territory now.",
+  ],
+  [
+    "Attempt rejected. Your keyboard may be innocent, but the result is not.",
+    "This is getting memorable for all the wrong reasons.",
+    "Denied again. You are building a reputation with the form.",
+  ],
+  [
+    "At this point the login box knows your weakness better than you do.",
+    "The form remains locked. Your persistence, however, is becoming performance art.",
+    "Another failure. Historians may study this sequence one day.",
+  ],
 ];
 
 let failedAttempts = 0;
@@ -23,6 +38,33 @@ function wait(ms) {
 function setStatus(message, type = "") {
   statusNode.textContent = message;
   statusNode.className = `status${type ? ` ${type}` : ""}`;
+}
+
+function getFailureMessage(attemptNumber, fallbackMessage) {
+  if (fallbackMessage) {
+    return fallbackMessage;
+  }
+
+  if (attemptNumber === 5) {
+    return "Attempt 5. Impressive commitment to being wrong.";
+  }
+
+  if (attemptNumber === 10) {
+    return "Attempt 10. The login form has officially lost respect for you.";
+  }
+
+  if (attemptNumber >= 15) {
+    return `Attempt ${attemptNumber}. This has become a relationship, and not a healthy one.`;
+  }
+
+  const tierIndex = Math.min(
+    humiliationTiers.length - 1,
+    Math.floor((attemptNumber - 1) / 3)
+  );
+  const tier = humiliationTiers[tierIndex];
+  const messageIndex = (attemptNumber - 1) % tier.length;
+
+  return `Attempt ${attemptNumber}. ${tier[messageIndex]}`;
 }
 
 form.addEventListener("submit", async (event) => {
@@ -90,10 +132,7 @@ form.addEventListener("submit", async (event) => {
   } catch (error) {
     failedAttempts += 1;
     passwordInput.value = "";
-    setStatus(
-      error.message || failureMessages[(failedAttempts - 1) % failureMessages.length],
-      "error"
-    );
+    setStatus(getFailureMessage(failedAttempts, error.message), "error");
   } finally {
     submitButton.disabled = false;
   }

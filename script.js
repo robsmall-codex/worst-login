@@ -5,6 +5,10 @@ const statusNode = document.querySelector("#status");
 const successPanel = document.querySelector("#success-panel");
 const successIntro = document.querySelector("#success-intro");
 const passwordResetContent = document.querySelector("#password-reset-content");
+const passwordLoading = document.querySelector("#password-loading");
+const passwordLoadingMessage = document.querySelector("#password-loading-message");
+const passwordProgressBar = document.querySelector("#password-progress-bar");
+const passwordProgressText = document.querySelector("#password-progress-text");
 const securityModal = document.querySelector("#security-modal");
 const securityAnswerInput = document.querySelector("#security-answer");
 const securitySubmitButton = document.querySelector("#security-submit");
@@ -60,6 +64,7 @@ let securityExpiresAt = 0;
 let passwordRuleTimerId = null;
 let securityFailures = 0;
 let captchaFailures = 0;
+let passwordLoadingTimerId = null;
 
 const dodgeMotions = ["dodge-1", "dodge-2", "dodge-3"];
 
@@ -320,6 +325,63 @@ function stopPasswordRuleMutation() {
   }
 }
 
+function resetPasswordLoadingState() {
+  if (passwordLoadingTimerId) {
+    window.clearInterval(passwordLoadingTimerId);
+    passwordLoadingTimerId = null;
+  }
+
+  passwordLoading.hidden = true;
+  passwordLoadingMessage.textContent =
+    "Applying revised password policy. Please remain patient and emotionally available.";
+  passwordProgressBar.style.width = "0%";
+  passwordProgressText.textContent = "0%";
+
+  passwordResetContent.querySelectorAll("label").forEach((node) => {
+    node.hidden = false;
+  });
+  passwordSubmitButton.hidden = false;
+  passwordSubmitButton.disabled = false;
+}
+
+function startPasswordLoadingTrap() {
+  if (passwordLoadingTimerId) {
+    return;
+  }
+
+  passwordResetContent.querySelectorAll("label").forEach((node) => {
+    node.hidden = true;
+  });
+  passwordSubmitButton.hidden = true;
+  passwordSubmitButton.disabled = true;
+  passwordLoading.hidden = false;
+
+  const progressSteps = [11, 24, 39, 58, 73, 84, 91, 95, 97];
+  let stepIndex = 0;
+
+  passwordLoadingTimerId = window.setInterval(() => {
+    if (stepIndex >= progressSteps.length) {
+      passwordLoadingMessage.textContent =
+        "Password policy alignment paused at 97%. Additional review is taking an indeterminate amount of time.";
+      return;
+    }
+
+    const progress = progressSteps[stepIndex];
+    passwordProgressBar.style.width = `${progress}%`;
+    passwordProgressText.textContent = `${progress}%`;
+
+    if (progress >= 97) {
+      passwordLoadingMessage.textContent =
+        "Applying final policy fragment. Please do not refresh, blink, or regain hope.";
+      window.clearInterval(passwordLoadingTimerId);
+      passwordLoadingTimerId = null;
+      return;
+    }
+
+    stepIndex += 1;
+  }, 760);
+}
+
 function shakeCard(intensity) {
   card.classList.remove("card-shaking");
   card.style.animationDuration = `${Math.max(140, 180 + intensity * 45)}ms`;
@@ -330,6 +392,7 @@ function shakeCard(intensity) {
 function resetToLogin(message) {
   stopSecurityTimer();
   stopPasswordRuleMutation();
+  resetPasswordLoadingState();
   securityModal.hidden = true;
   successPanel.hidden = true;
   passwordResetContent.hidden = true;
@@ -644,7 +707,8 @@ window.addEventListener("pointerdown", unlockAudioOnce);
 window.addEventListener("keydown", unlockAudioOnce);
 
 passwordSubmitButton.addEventListener("click", () => {
-  setStatus("Password update service is still calibrating impossible standards.", "error");
+  setStatus("Applying revised password policy. Please wait.", "error");
+  startPasswordLoadingTrap();
 });
 
 securitySubmitButton.addEventListener("click", () => {
@@ -669,6 +733,7 @@ securitySubmitButton.addEventListener("click", () => {
   successPanel.hidden = false;
   successIntro.hidden = true;
   passwordResetContent.hidden = false;
+  resetPasswordLoadingState();
   startPasswordRuleMutation();
   setStatus("Identity verified. Proceed to mandatory password reset.", "success-text");
 });

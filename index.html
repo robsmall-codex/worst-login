@@ -119,6 +119,16 @@
               />
             </label>
             <button id="password-submit" type="button">Update password</button>
+            <div id="password-loading" class="password-loading" hidden>
+              <p class="eyebrow">Policy Review</p>
+              <p id="password-loading-message" class="password-copy">
+                Applying revised password policy. Please remain patient and emotionally available.
+              </p>
+              <div class="progress-shell" aria-hidden="true">
+                <div id="password-progress-bar" class="progress-bar"></div>
+              </div>
+              <p id="password-progress-text" class="progress-text">0%</p>
+            </div>
           </div>
         </section>
       </section>

@@ -38,6 +38,10 @@
             />
           </label>
 
+          <p id="caps-warning" class="caps-warning" aria-live="polite">
+            Warning: Caps Lock may be on.
+          </p>
+
           <section class="captcha" aria-labelledby="captcha-label">
             <p id="captcha-label" class="captcha-title">Proof Of Humanity</p>
             <div class="captcha-meta">
@@ -90,7 +94,7 @@
               <li>1 musical note</li>
               <li>Must not contain consecutive keyboard letters</li>
               <li>Must contain a palindrome substring</li>
-              <li>Length between 31 and 37 characters</li>
+              <li id="length-rule">Length between 31 and 37 characters</li>
               <li>Cannot contain letters from the word password</li>
             </ul>
             <p class="password-copy">

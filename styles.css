@@ -83,6 +83,10 @@ body {
   box-shadow: 0 54px 142px rgba(122, 18, 13, 0.52);
 }
 
+.card.card-shaking {
+  animation: card-shake 220ms linear 1;
+}
+
 .eyebrow {
   margin: 0 0 8px;
   text-transform: uppercase;
@@ -130,6 +134,13 @@ h1 {
 .field input:focus {
   outline: 2px solid rgba(216, 44, 32, 0.32);
   outline-offset: 2px;
+}
+
+.caps-warning {
+  margin: -2px 0 14px;
+  color: #a11811;
+  font-size: 0.95rem;
+  font-weight: 700;
 }
 
 .captcha {
@@ -339,6 +350,15 @@ button:disabled {
 
 .security-dialog .field input {
   border-color: rgba(255, 215, 209, 0.35);
+}
+
+@keyframes card-shake {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  20% { transform: translate(-8px, 2px) rotate(-0.8deg); }
+  40% { transform: translate(10px, -3px) rotate(0.8deg); }
+  60% { transform: translate(-9px, 3px) rotate(-0.7deg); }
+  80% { transform: translate(8px, -2px) rotate(0.6deg); }
+  100% { transform: translate(0, 0) rotate(0deg); }
 }
 
 @media (max-width: 640px) {

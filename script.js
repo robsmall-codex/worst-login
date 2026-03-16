@@ -12,6 +12,8 @@ const securityTimer = document.querySelector("#security-timer");
 const usernameInput = document.querySelector("#username");
 const passwordInput = document.querySelector("#password");
 const passwordSubmitButton = document.querySelector("#password-submit");
+const capsWarning = document.querySelector("#caps-warning");
+const lengthRule = document.querySelector("#length-rule");
 const captchaSection = document.querySelector(".captcha");
 const captchaInstruction = document.querySelector("#captcha-instruction");
 const captchaHint = document.querySelector("#captcha-hint");
@@ -55,6 +57,9 @@ let activeCardMotion = "";
 let remainingSubmitDodges = 3;
 let securityTimerId = null;
 let securityExpiresAt = 0;
+let passwordRuleTimerId = null;
+let securityFailures = 0;
+let captchaFailures = 0;
 
 const dodgeMotions = ["dodge-1", "dodge-2", "dodge-3"];
 
@@ -75,6 +80,12 @@ const misleadingHints = [
   "Please answer calmly. Panic has a poor success rate.",
   "This challenge was reviewed by nobody and approved immediately.",
   "Refresh if confused. It almost never helps.",
+];
+
+const lengthRuleVariants = [
+  "Length between 31 and 37 characters",
+  "Length between 32 and 36 characters",
+  "Length between 31 and 36 characters",
 ];
 
 function randomNumber(max) {
@@ -277,6 +288,10 @@ function clearCredentialInputs() {
   updateCardShift();
 }
 
+function maybeShowCapsWarning() {
+  capsWarning.hidden = false;
+}
+
 function resetSubmitDodges() {
   remainingSubmitDodges = 3;
 }
@@ -288,8 +303,33 @@ function stopSecurityTimer() {
   }
 }
 
+function startPasswordRuleMutation() {
+  stopPasswordRuleMutation();
+  let variantIndex = 0;
+  lengthRule.textContent = lengthRuleVariants[variantIndex];
+  passwordRuleTimerId = window.setInterval(() => {
+    variantIndex = (variantIndex + 1) % lengthRuleVariants.length;
+    lengthRule.textContent = lengthRuleVariants[variantIndex];
+  }, 2600);
+}
+
+function stopPasswordRuleMutation() {
+  if (passwordRuleTimerId) {
+    window.clearInterval(passwordRuleTimerId);
+    passwordRuleTimerId = null;
+  }
+}
+
+function shakeCard(intensity) {
+  card.classList.remove("card-shaking");
+  card.style.animationDuration = `${Math.max(140, 180 + intensity * 45)}ms`;
+  void card.offsetWidth;
+  card.classList.add("card-shaking");
+}
+
 function resetToLogin(message) {
   stopSecurityTimer();
+  stopPasswordRuleMutation();
   securityModal.hidden = true;
   successPanel.hidden = true;
   passwordResetContent.hidden = true;
@@ -299,6 +339,7 @@ function resetToLogin(message) {
   clearCredentialInputs();
   captchaAnswerInput.value = "";
   securityAnswerInput.value = "";
+  securityFailures = 0;
   resetSubmitDodges();
   setCardMotion("");
   refreshCaptcha();
@@ -361,7 +402,10 @@ function updateSecurityTimer() {
     Math.ceil((securityExpiresAt - Date.now()) / 1000)
   );
 
-  securityTimer.textContent = `${remainingSeconds}s`;
+  const displayedSeconds =
+    remainingSeconds <= 8 && remainingSeconds >= 5 ? 4 : remainingSeconds;
+
+  securityTimer.textContent = `${displayedSeconds}s`;
 
   if (Date.now() >= securityExpiresAt) {
     resetToLogin("Security response window expired. Access revoked.");
@@ -371,6 +415,7 @@ function updateSecurityTimer() {
 function showSecurityChallenge() {
   stopSecurityTimer();
   securityAnswerInput.value = "";
+  securityFailures = 0;
   securityExpiresAt = Date.now() + 15000;
   securityModal.hidden = false;
   securityAnswerInput.focus();
@@ -450,8 +495,10 @@ form.addEventListener("submit", async (event) => {
   if (Date.now() >= captchaExpiresAt) {
     failedAttempts += 1;
     captchaDifficulty += 1;
+    captchaFailures += 1;
     clearCredentialInputs();
     resetSubmitDodges();
+    shakeCard(captchaFailures);
     refreshCaptcha();
     setStatus(
       `Attempt ${failedAttempts}. Captcha expired. Speed and accuracy were both invited.`,
@@ -463,8 +510,10 @@ form.addEventListener("submit", async (event) => {
   if (captchaAnswer !== currentCaptchaAnswer) {
     failedAttempts += 1;
     captchaDifficulty += 1;
+    captchaFailures += 1;
     clearCredentialInputs();
     resetSubmitDodges();
+    shakeCard(captchaFailures);
     refreshCaptcha();
     setStatus(
       `Attempt ${failedAttempts}. Captcha failed. A stunning setback before the login even mattered.`,
@@ -508,11 +557,13 @@ form.addEventListener("submit", async (event) => {
       successPanel.hidden = false;
       successIntro.hidden = false;
       passwordResetContent.hidden = true;
+      stopPasswordRuleMutation();
       captchaSection.hidden = true;
       form.hidden = true;
       playSuccessFanfare();
       failedAttempts = 0;
       captchaDifficulty = 0;
+      captchaFailures = 0;
       resetSubmitDodges();
       form.reset();
       setCardMotion("");
@@ -530,15 +581,19 @@ form.addEventListener("submit", async (event) => {
 
     failedAttempts += 1;
     captchaDifficulty += 1;
+    captchaFailures += 1;
     passwordInput.value = "";
     resetSubmitDodges();
+    shakeCard(captchaFailures);
     refreshCaptcha();
     setStatus(getFailureMessage(failedAttempts), "error");
   } catch (error) {
     failedAttempts += 1;
     captchaDifficulty += 1;
+    captchaFailures += 1;
     passwordInput.value = "";
     resetSubmitDodges();
+    shakeCard(captchaFailures);
     refreshCaptcha();
     setStatus(getFailureMessage(failedAttempts, error.message), "error");
   } finally {
@@ -559,6 +614,8 @@ usernameInput.addEventListener("input", updateCardShift);
 usernameInput.addEventListener("focus", () => setCardMotion(""));
 passwordInput.addEventListener("focus", () => setCardMotion("password"));
 captchaAnswerInput.addEventListener("focus", () => setCardMotion("captcha"));
+passwordInput.addEventListener("input", maybeShowCapsWarning);
+usernameInput.addEventListener("input", maybeShowCapsWarning);
 submitButton.addEventListener("pointerenter", () => {
   if (dodgeSubmitButton()) {
     return;
@@ -594,7 +651,16 @@ securitySubmitButton.addEventListener("click", () => {
   const answer = securityAnswerInput.value.trim().toLowerCase();
 
   if (answer !== "tacos") {
+    securityFailures += 1;
+    shakeCard(securityFailures + 1);
     resetToLogin("Security answer rejected. Access revoked.");
+    return;
+  }
+
+  if (!window.confirm("Are you absolutely certain Andy prefers tacos?")) {
+    securityFailures += 1;
+    shakeCard(securityFailures + 1);
+    resetToLogin("Security certainty check failed. Access revoked.");
     return;
   }
 
@@ -603,9 +669,11 @@ securitySubmitButton.addEventListener("click", () => {
   successPanel.hidden = false;
   successIntro.hidden = true;
   passwordResetContent.hidden = false;
+  startPasswordRuleMutation();
   setStatus("Identity verified. Proceed to mandatory password reset.", "success-text");
 });
 
 refreshCaptcha();
 updateCardShift();
+maybeShowCapsWarning();
 startCaptchaTimer();

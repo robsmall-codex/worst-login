@@ -1,22 +1,35 @@
-@import url("https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap");
 
 :root {
-  color-scheme: light;
-  --bg-main: #fcfcfb;
-  --panel: rgba(255, 255, 255, 0.94);
-  --border: #d9dde2;
-  --text: #161f2a;
-  --muted: #5e6d7d;
-  --accent: #e13b30;
-  --accent-hover: #c92d23;
-  --accent-deep: #8a211d;
-  --accent-soft: #fff0ec;
-  --sky: #8fc7ff;
-  --sun: #ffd861;
-  --ink: #202938;
-  --success: #13885d;
-  --shadow: 0 28px 80px rgba(31, 41, 55, 0.14);
-  font-family: "Sora", sans-serif;
+  color-scheme: dark;
+  --primary-font: "Space Grotesk", sans-serif;
+  --secondary-font: "Space Mono", monospace;
+  --primary-color: #ff4438;
+  --midnight: #091a23;
+  --yellow: #dcff1e;
+  --base-white: #ffffff;
+  --hyper-07: #e4291e;
+  --hyper-08: #d1281e;
+  --hyper-09: #8a221c;
+  --dusk: #163341;
+  --dusk-09: #0d212c;
+  --dusk-50: #8a99a0;
+  --dusk-30: #b9c2c6;
+  --grey-10: #fcfcfc;
+  --panel: rgba(9, 26, 35, 0.88);
+  --panel-strong: rgba(13, 33, 44, 0.96);
+  --border: rgba(138, 153, 160, 0.28);
+  --text: var(--base-white);
+  --muted: var(--dusk-30);
+  --accent: var(--hyper-07);
+  --accent-hover: var(--hyper-08);
+  --accent-deep: var(--hyper-09);
+  --accent-soft: rgba(255, 68, 56, 0.12);
+  --sky: #80dbff;
+  --sun: var(--yellow);
+  --ink: var(--midnight);
+  --success: #7df1bd;
+  --shadow: 0 1.75rem 5rem rgba(0, 0, 0, 0.35);
 }
 
 * {
@@ -32,11 +45,12 @@ body {
   min-height: 100vh;
   color: var(--text);
   background:
-    radial-gradient(circle at 12% 16%, rgba(143, 199, 255, 0.22), transparent 20%),
-    radial-gradient(circle at 82% 10%, rgba(255, 216, 97, 0.22), transparent 18%),
-    linear-gradient(132deg, transparent 0 67%, rgba(225, 59, 48, 0.94) 67% 100%),
-    linear-gradient(180deg, #ffffff, var(--bg-main));
+    radial-gradient(circle at 15% 18%, rgba(128, 219, 255, 0.16), transparent 20%),
+    radial-gradient(circle at 82% 12%, rgba(220, 255, 30, 0.18), transparent 16%),
+    linear-gradient(138deg, transparent 0 64%, rgba(255, 68, 56, 0.88) 64% 100%),
+    linear-gradient(180deg, #0f2733, var(--midnight));
   overflow-x: hidden;
+  font-family: var(--primary-font);
 }
 
 body::before {
@@ -44,11 +58,11 @@ body::before {
   position: fixed;
   top: -28px;
   right: -84px;
-  font-family: "Space Mono", monospace;
+  font-family: var(--secondary-font);
   font-size: clamp(6rem, 18vw, 14rem);
   font-weight: 700;
   letter-spacing: -0.08em;
-  color: rgba(225, 59, 48, 0.08);
+  color: rgba(255, 255, 255, 0.05);
   transform: rotate(-8deg);
   pointer-events: none;
   z-index: 0;
@@ -59,8 +73,8 @@ body::after {
   position: fixed;
   inset: 0;
   background:
-    linear-gradient(90deg, rgba(32, 41, 56, 0.025) 1px, transparent 1px),
-    linear-gradient(rgba(32, 41, 56, 0.025) 1px, transparent 1px);
+    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px);
   background-size: 32px 32px;
   pointer-events: none;
   z-index: 0;
@@ -141,8 +155,8 @@ body::after {
   text-transform: uppercase;
   letter-spacing: 0.16em;
   font-size: 0.74rem;
-  color: var(--accent-deep);
-  font-family: "Space Mono", monospace;
+  color: var(--yellow);
+  font-family: var(--secondary-font);
 }
 
 h1,
@@ -164,49 +178,50 @@ h1 {
   margin-bottom: 24px;
   color: var(--muted);
   line-height: 1.5;
+  max-width: 24rem;
 }
 
 .field {
   display: grid;
   gap: 8px;
   margin-bottom: 16px;
-  font-weight: 600;
+  font-weight: 500;
   font-size: 0.95rem;
 }
 
 .field input {
   width: 100%;
   padding: 14px 16px;
-  border: 1px solid rgba(94, 109, 125, 0.24);
+  border: 1px solid rgba(185, 194, 198, 0.2);
   border-radius: 16px;
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.04);
   color: var(--text);
   font: inherit;
 }
 
 .field input:focus {
-  outline: 2px solid rgba(225, 59, 48, 0.24);
+  outline: 2px solid rgba(220, 255, 30, 0.28);
   outline-offset: 2px;
 }
 
 .caps-warning {
   margin: -2px 0 14px;
-  color: #8a5200;
-  background: rgba(255, 216, 97, 0.28);
-  border: 1px solid rgba(255, 216, 97, 0.55);
+  color: var(--midnight);
+  background: rgba(220, 255, 30, 0.88);
+  border: 1px solid rgba(220, 255, 30, 0.96);
   border-radius: 999px;
   padding: 10px 12px;
   font-size: 0.88rem;
   font-weight: 700;
-  font-family: "Space Mono", monospace;
+  font-family: var(--secondary-font);
 }
 
 .captcha {
   margin: 6px 0 8px;
   padding: 16px;
-  border: 1px dashed rgba(94, 109, 125, 0.28);
+  border: 1px dashed rgba(185, 194, 198, 0.28);
   border-radius: 22px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(247, 249, 251, 0.92));
+  background: linear-gradient(180deg, rgba(22, 51, 65, 0.52), rgba(13, 33, 44, 0.92));
 }
 
 .captcha-title {
@@ -229,8 +244,8 @@ h1 {
   margin: 0;
   font-size: 0.92rem;
   font-weight: 700;
-  color: var(--accent);
-  font-family: "Space Mono", monospace;
+  color: var(--yellow);
+  font-family: var(--secondary-font);
 }
 
 .captcha-refresh {
@@ -239,12 +254,13 @@ h1 {
   padding: 8px 12px;
   border-radius: 999px;
   font-size: 0.84rem;
-  background: var(--ink);
-  font-family: "Space Mono", monospace;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(185, 194, 198, 0.2);
+  font-family: var(--primary-font);
 }
 
 .captcha-refresh:hover {
-  background: #131b26;
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .captcha-instruction {
@@ -255,7 +271,7 @@ h1 {
 
 .captcha-hint {
   margin: 0 0 10px;
-  color: #7d5e18;
+  color: rgba(220, 255, 30, 0.82);
   font-size: 0.92rem;
   font-style: italic;
 }
@@ -264,14 +280,14 @@ h1 {
   margin: 0 0 14px;
   padding: 12px 14px;
   border-radius: 16px;
-  border: 1px solid rgba(94, 109, 125, 0.14);
+  border: 1px solid rgba(185, 194, 198, 0.16);
   background:
-    linear-gradient(135deg, rgba(225, 59, 48, 0.08), rgba(143, 199, 255, 0.16)),
-    #fff;
+    linear-gradient(135deg, rgba(255, 68, 56, 0.16), rgba(128, 219, 255, 0.12)),
+    rgba(255, 255, 255, 0.03);
   font-size: 1.2rem;
   letter-spacing: 0.08em;
   text-align: center;
-  font-family: "Space Mono", monospace;
+  font-family: var(--secondary-font);
 }
 
 .captcha-field {
@@ -286,15 +302,15 @@ button {
   width: 100%;
   margin-top: 8px;
   padding: 14px 18px;
-  border: 0;
+  border: 1px solid var(--primary-color);
   border-radius: 999px;
-  background: var(--accent);
-  color: #fffaf5;
+  background: rgba(53, 29, 34, 0.95);
+  color: var(--base-white);
   cursor: pointer;
   font: inherit;
-  font-weight: 700;
+  font-weight: 500;
   transition: background 160ms ease, transform 160ms ease;
-  font-family: "Space Mono", monospace;
+  font-family: var(--primary-font);
   letter-spacing: 0.03em;
 }
 
@@ -327,8 +343,8 @@ button:disabled {
   margin-top: 24px;
   padding: 22px;
   border-radius: 24px;
-  background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(248,250,252,0.92));
-  border: 1px solid rgba(94, 109, 125, 0.18);
+  background: linear-gradient(180deg, rgba(13, 33, 44, 0.96), rgba(9, 26, 35, 0.92));
+  border: 1px solid rgba(185, 194, 198, 0.16);
 }
 
 .success h2 {
@@ -352,8 +368,8 @@ button:disabled {
   margin-top: 18px;
   padding: 18px;
   border-radius: 20px;
-  border: 1px solid rgba(94, 109, 125, 0.18);
-  background: linear-gradient(180deg, rgba(255, 240, 236, 0.76), rgba(255, 255, 255, 0.98));
+  border: 1px solid rgba(185, 194, 198, 0.16);
+  background: linear-gradient(180deg, rgba(22, 51, 65, 0.76), rgba(13, 33, 44, 0.96));
 }
 
 .progress-shell {
@@ -375,9 +391,9 @@ button:disabled {
 
 .progress-text {
   margin: 12px 0 0;
-  font-family: "Space Mono", monospace;
+  font-family: var(--secondary-font);
   font-size: 0.92rem;
-  color: var(--accent-deep);
+  color: var(--yellow);
 }
 
 .security-modal {

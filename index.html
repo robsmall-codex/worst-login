@@ -9,10 +9,10 @@
   <body>
     <main class="shell">
       <section class="card" aria-labelledby="login-title">
-        <p class="eyebrow">Demo Authentication</p>
+        <p class="eyebrow">Demo auth</p>
         <h1 id="login-title">Log in</h1>
         <p class="intro">
-          Enter one of the accepted demo credentials to continue.
+          Use the approved demo creds to keep moving.
         </p>
 
         <form id="login-form" novalidate>
@@ -39,11 +39,11 @@
           </label>
 
           <p id="caps-warning" class="caps-warning" aria-live="polite">
-            Warning: Caps Lock may be on.
+            Caps Lock may be on.
           </p>
 
           <section class="captcha" aria-labelledby="captcha-label">
-            <p id="captcha-label" class="captcha-title">Proof Of Humanity</p>
+            <p id="captcha-label" class="captcha-title">Proof of humanity</p>
             <div class="captcha-meta">
               <p id="captcha-timer" class="captcha-timer" aria-live="polite"></p>
               <button id="captcha-refresh" class="captcha-refresh" type="button">
@@ -75,13 +75,13 @@
         <section id="success-panel" class="success" hidden>
           <h2>Access granted</h2>
           <p id="success-intro" class="password-copy">
-            Credentials confirmed. Please stand by while additional access controls initialize.
+            Creds verified. More checks are loading now.
           </p>
           <div id="password-reset-content" hidden>
-            <p class="eyebrow">Immediate Action Required</p>
+            <p class="eyebrow">Immediate action required</p>
             <p class="password-copy">
-              You made it through the front door. Your current password is now considered emotionally compromised.
-              Before proceeding, your replacement password must satisfy every rule below.
+              You made it through. Your password is now flagged as weak, suspicious, and emotionally compromised.
+              Before you move on, the next password must satisfy every rule below.
             </p>
             <ul class="password-rules">
               <li>1 uppercase letter</li>
@@ -98,7 +98,7 @@
               <li>Cannot contain letters from the word password</li>
             </ul>
             <p class="password-copy">
-              Password update module warming up. Please internalize these requirements while waiting indefinitely.
+              Password reset is warming up. Please memorize the rules while the app makes this take longer.
             </p>
             <label class="field">
               <span>New password</span>
@@ -120,9 +120,9 @@
             </label>
             <button id="password-submit" type="button">Update password</button>
             <div id="password-loading" class="password-loading" hidden>
-              <p class="eyebrow">Policy Review</p>
+              <p class="eyebrow">Policy review</p>
               <p id="password-loading-message" class="password-copy">
-                Applying revised password policy. Please remain patient and emotionally available.
+                Applying the revised password policy. Please stay patient and available.
               </p>
               <div class="progress-shell" aria-hidden="true">
                 <div id="password-progress-bar" class="progress-bar"></div>
@@ -137,12 +137,11 @@
     <section id="security-modal" class="security-modal" hidden>
       <div class="security-dialog" role="dialog" aria-modal="true" aria-labelledby="security-title">
         <p class="security-icons">WARNING WARNING WARNING  ☠  ☠  WARNING WARNING WARNING</p>
-        <h2 id="security-title">Executive Identity Verification</h2>
+        <h2 id="security-title">Executive identity check</h2>
         <p class="security-timer-label">Response deadline</p>
         <p id="security-timer" class="security-timer" aria-live="polite"></p>
         <p class="security-copy">
-          Catastrophic access review in progress. Enter the correct answer to the security question immediately
-          or your access will be revoked and this event will be escalated.
+          Access review is live. Enter the correct answer fast or your access is revoked and this gets escalated.
         </p>
         <p class="security-question">What is Andy's favorite food?</p>
         <label class="field">

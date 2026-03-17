@@ -333,7 +333,7 @@ function resetPasswordLoadingState() {
 
   passwordLoading.hidden = true;
   passwordLoadingMessage.textContent =
-    "Applying revised password policy. Please remain patient and emotionally available.";
+    "Applying the revised password policy. Please stay patient and available.";
   passwordProgressBar.style.width = "0%";
   passwordProgressText.textContent = "0%";
 
@@ -362,7 +362,7 @@ function startPasswordLoadingTrap() {
   passwordLoadingTimerId = window.setInterval(() => {
     if (stepIndex >= progressSteps.length) {
       passwordLoadingMessage.textContent =
-        "Password policy alignment paused at 97%. Additional review is taking an indeterminate amount of time.";
+        "Password policy sync is paused at 97%. Extra review is taking an unknown amount of time.";
       return;
     }
 
@@ -372,7 +372,7 @@ function startPasswordLoadingTrap() {
 
     if (progress >= 97) {
       passwordLoadingMessage.textContent =
-        "Applying final policy fragment. Please do not refresh, blink, or regain hope.";
+        "Applying the final policy fragment. Please do not refresh, blink, or regain hope.";
       window.clearInterval(passwordLoadingTimerId);
       passwordLoadingTimerId = null;
       return;
@@ -499,7 +499,7 @@ function startCaptchaTimer() {
       playTimeoutAlarm();
       refreshCaptcha();
       clearCredentialInputs();
-      setStatus("Captcha expired. The replacement is less cooperative.", "error");
+      setStatus("Captcha expired. The next one is less friendly.", "error");
     }
   }, 250);
 }
@@ -551,7 +551,7 @@ form.addEventListener("submit", async (event) => {
   }
 
   if (!captchaAnswer) {
-    setStatus("Complete the captcha ritual first.", "error");
+    setStatus("Finish the captcha first.", "error");
     return;
   }
 
@@ -579,14 +579,14 @@ form.addEventListener("submit", async (event) => {
     shakeCard(captchaFailures);
     refreshCaptcha();
     setStatus(
-      `Attempt ${failedAttempts}. Captcha failed. A stunning setback before the login even mattered.`,
+      `Attempt ${failedAttempts}. Captcha failed. An early setback before the login even mattered.`,
       "error"
     );
     return;
   }
 
   submitButton.disabled = true;
-  setStatus("Checking credentials...");
+  setStatus("Checking creds...");
 
   try {
     await wait(1800 + failedAttempts * 500);
@@ -616,7 +616,7 @@ form.addEventListener("submit", async (event) => {
     }
 
     if (data && data.ok) {
-      setStatus("Login successful.", "success-text");
+      setStatus("Login approved.", "success-text");
       successPanel.hidden = false;
       successIntro.hidden = false;
       passwordResetContent.hidden = true;
@@ -670,7 +670,7 @@ captchaRefreshButton.addEventListener("click", () => {
   resetSubmitDodges();
   setCardMotion("captcha");
   refreshCaptcha();
-  setStatus("A fresh challenge has been issued. It is not friendlier.", "error");
+  setStatus("Fresh challenge issued. It is not friendlier.", "error");
 });
 
 usernameInput.addEventListener("input", updateCardShift);
@@ -707,7 +707,7 @@ window.addEventListener("pointerdown", unlockAudioOnce);
 window.addEventListener("keydown", unlockAudioOnce);
 
 passwordSubmitButton.addEventListener("click", () => {
-  setStatus("Applying revised password policy. Please wait.", "error");
+  setStatus("Applying the revised password policy. Please wait.", "error");
   startPasswordLoadingTrap();
 });
 
@@ -735,7 +735,7 @@ securitySubmitButton.addEventListener("click", () => {
   passwordResetContent.hidden = false;
   resetPasswordLoadingState();
   startPasswordRuleMutation();
-  setStatus("Identity verified. Proceed to mandatory password reset.", "success-text");
+  setStatus("Identity verified. Move to the password reset step.", "success-text");
 });
 
 refreshCaptcha();
